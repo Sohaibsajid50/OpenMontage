@@ -4,59 +4,189 @@
   "title": "Scene Plan",
   "description": "Ordered scene list produced by the Scene Planner agent.",
   "type": "object",
-  "required": ["version", "scenes"],
+  "required": [
+    "version",
+    "scenes"
+  ],
   "properties": {
-    "version": { "type": "string", "const": "1.0" },
-    "style_playbook": { "type": "string", "description": "Name of the active style playbook" },
+    "version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "style_playbook": {
+      "type": "string",
+      "description": "Name of the active style playbook"
+    },
     "scenes": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "type", "description", "start_seconds", "end_seconds"],
+        "required": [
+          "id",
+          "type",
+          "description",
+          "start_seconds",
+          "end_seconds"
+        ],
         "properties": {
-          "id": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
           "type": {
             "type": "string",
-            "enum": ["talking_head", "broll", "animation", "character_scene", "diagram", "text_card", "transition", "generated", "screen_recording"]
+            "enum": [
+              "talking_head",
+              "broll",
+              "animation",
+              "character_scene",
+              "diagram",
+              "text_card",
+              "transition",
+              "generated",
+              "screen_recording",
+              "video"
+            ]
           },
-          "description": { "type": "string" },
-          "start_seconds": { "type": "number", "minimum": 0 },
-          "end_seconds": { "type": "number", "minimum": 0 },
-          "script_section_id": { "type": "string" },
-          "framing": { "type": "string" },
-          "movement": { "type": "string" },
-          "transition_in": { "type": "string" },
-          "transition_out": { "type": "string" },
-          "overlay_notes": { "type": "string" },
+          "description": {
+            "type": "string"
+          },
+          "start_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "end_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "script_section_id": {
+            "type": "string"
+          },
+          "framing": {
+            "type": "string"
+          },
+          "movement": {
+            "type": "string"
+          },
+          "transition_in": {
+            "type": "string"
+          },
+          "transition_out": {
+            "type": "string"
+          },
+          "overlay_notes": {
+            "type": "string"
+          },
           "shot_language": {
             "type": "object",
             "description": "Structured cinematography vocabulary for this scene",
             "properties": {
               "shot_size": {
                 "type": "string",
-                "enum": ["extreme_wide", "wide", "medium_wide", "medium", "medium_close", "close_up", "extreme_close_up", "over_shoulder", "insert", "establishing"]
+                "enum": [
+                  "extreme_wide",
+                  "wide",
+                  "medium_wide",
+                  "medium",
+                  "medium_close",
+                  "close_up",
+                  "extreme_close_up",
+                  "over_shoulder",
+                  "insert",
+                  "establishing"
+                ]
               },
               "camera_movement": {
                 "type": "string",
-                "enum": ["static", "pan_left", "pan_right", "tilt_up", "tilt_down", "dolly_in", "dolly_out", "tracking_left", "tracking_right", "crane_up", "crane_down", "handheld", "steadicam", "whip_pan", "orbital", "zoom_in", "zoom_out", "rack_focus"]
+                "enum": [
+                  "static",
+                  "pan_left",
+                  "pan_right",
+                  "tilt_up",
+                  "tilt_down",
+                  "dolly_in",
+                  "dolly_out",
+                  "tracking_left",
+                  "tracking_right",
+                  "crane_up",
+                  "crane_down",
+                  "handheld",
+                  "steadicam",
+                  "whip_pan",
+                  "orbital",
+                  "zoom_in",
+                  "zoom_out",
+                  "rack_focus"
+                ]
               },
-              "lens_mm": { "type": "integer", "enum": [14, 24, 35, 50, 85, 135, 200] },
+              "lens_mm": {
+                "type": "integer",
+                "enum": [
+                  14,
+                  24,
+                  35,
+                  50,
+                  85,
+                  135,
+                  200
+                ]
+              },
               "lighting_key": {
                 "type": "string",
-                "enum": ["high_key", "low_key", "natural", "golden_hour", "blue_hour", "tungsten_warm", "neon", "silhouette", "rim_lit", "volumetric", "overcast_soft"]
+                "enum": [
+                  "high_key",
+                  "low_key",
+                  "natural",
+                  "golden_hour",
+                  "blue_hour",
+                  "tungsten_warm",
+                  "neon",
+                  "silhouette",
+                  "rim_lit",
+                  "volumetric",
+                  "overcast_soft"
+                ]
               },
-              "depth_of_field": { "type": "string", "enum": ["shallow", "medium", "deep"] },
-              "color_temperature": { "type": "string", "enum": ["cool", "neutral", "warm", "mixed"] }
+              "depth_of_field": {
+                "type": "string",
+                "enum": [
+                  "shallow",
+                  "medium",
+                  "deep"
+                ]
+              },
+              "color_temperature": {
+                "type": "string",
+                "enum": [
+                  "cool",
+                  "neutral",
+                  "warm",
+                  "mixed"
+                ]
+              }
             },
             "additionalProperties": false
           },
           "shot_intent": {
             "type": "string",
-            "description": "WHY this shot exists — what purpose it serves in the video"
+            "description": "WHY this shot exists \u2014 what purpose it serves in the video"
           },
           "narrative_role": {
             "type": "string",
-            "enum": ["establish_context", "introduce_subject", "build_tension", "deliver_payload", "transition", "emotional_beat", "evidence", "comparison", "resolution", "call_to_action"],
+            "enum": [
+              "establish_context",
+              "introduce_subject",
+              "build_tension",
+              "deliver_payload",
+              "transition",
+              "emotional_beat",
+              "evidence",
+              "comparison",
+              "resolution",
+              "call_to_action",
+              "hook",
+              "visual_proof",
+              "re_hook"
+            ],
             "description": "What role this scene plays in the narrative structure"
           },
           "information_role": {
@@ -66,32 +196,49 @@
           "hero_moment": {
             "type": "boolean",
             "default": false,
-            "description": "True if this is the visual peak of the video — deserves extra attention"
+            "description": "True if this is the visual peak of the video \u2014 deserves extra attention"
           },
           "character_actions": {
             "type": "array",
             "description": "Character-specific acting beats for rigged character animation scenes",
             "items": {
               "type": "object",
-              "required": ["character_id", "action_sequence"],
+              "required": [
+                "character_id",
+                "action_sequence"
+              ],
               "properties": {
-                "character_id": { "type": "string" },
-                "emotion": { "type": "string" },
+                "character_id": {
+                  "type": "string"
+                },
+                "emotion": {
+                  "type": "string"
+                },
                 "action_sequence": {
                   "type": "array",
-                  "items": { "type": "string" },
+                  "items": {
+                    "type": "string"
+                  },
                   "minItems": 1
                 },
-                "dialogue": { "type": "string" },
-                "target": { "type": "string" },
-                "notes": { "type": "string" }
+                "dialogue": {
+                  "type": "string"
+                },
+                "target": {
+                  "type": "string"
+                },
+                "notes": {
+                  "type": "string"
+                }
               },
               "additionalProperties": false
             }
           },
           "texture_keywords": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Visual texture descriptors: grain, clean, anamorphic, gritty, ethereal, etc."
           },
           "required_assets": {
@@ -99,19 +246,75 @@
             "items": {
               "type": "object",
               "properties": {
-                "type": { "type": "string" },
-                "description": { "type": "string" },
-                "source": { "type": "string", "enum": ["generate", "source", "provided", "record"] }
+                "type": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "generate",
+                    "source",
+                    "provided",
+                    "record"
+                  ]
+                }
               },
-              "required": ["type", "description", "source"]
+              "required": [
+                "type",
+                "description",
+                "source"
+              ]
             }
+          },
+          "environment_role": {
+            "type": "string",
+            "description": "How this scene changes the viewer's screen experience while preserving entity continuity, e.g. establishing_environment, macro_detail_insert, prey_pov, split_composite, impact_action, aftermath_pullback, hero_portrait."
+          },
+          "environment_notes": {
+            "type": "string",
+            "description": "Specific background, habitat, perspective, or screen-grammar notes that keep the sequence from repeating the same setting."
+          },
+          "visual_entity_id": {
+            "type": "string",
+            "description": "OPTIONAL. Links this scene to a recurring visual entity in visual_memory. Enables object-identity continuity across scenes (e.g. the same harpy eagle from extreme close-up to wings-spread)."
+          },
+          "reuse": {
+            "type": "object",
+            "description": "OPTIONAL. How this scene reuses its visual_entity. Omit for one-off visuals.",
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": [
+                  "canonical_introduction",
+                  "derived_view"
+                ],
+                "description": "canonical_introduction = the scene that defines the entity; derived_view = a later scene conditioned on the canonical."
+              },
+              "reference": {
+                "type": "string",
+                "description": "What to condition on. Use 'canonical' to reference the entity's canonical asset (star topology \u2014 prevents drift). A specific asset id selects progressive chaining."
+              },
+              "variation": {
+                "type": "string",
+                "description": "The intended change from canonical: camera angle, zoom, pose, wing position, etc."
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "additionalProperties": false
           }
         },
         "additionalProperties": false
       },
       "minItems": 1
     },
-    "metadata": { "type": "object" }
+    "metadata": {
+      "type": "object"
+    }
   },
   "additionalProperties": false
 }

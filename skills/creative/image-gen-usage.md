@@ -46,7 +46,8 @@ verbatim into every prompt. Distill it into a shorter scene-appropriate anchor.
 ### Strategy 2 — Hero Reference Image (Recommended)
 
 1. Generate one "hero" image at maximum quality (`FLUX.2 [max]`, $0.07)
-2. Use it as `input_image` for all subsequent frames:
+2. Inspect and approve it before generating the rest of the batch.
+3. Use it as `input_image` for all subsequent frames:
 
 ```
 Frame 1: T2I with detailed prompt → hero.png
@@ -55,6 +56,16 @@ Frame 3: I2I with hero.png + "Same style, zoomed in on..."
 ```
 
 FLUX.2 supports up to 4 references (klein) or 8 references (pro/max/flex). Reference by number: "The character from image 1 in the environment from image 2."
+
+If using a Kontext-style editor, the reference image can dominate the output.
+Use the anchor for identity and style, but write every downstream prompt as a
+new composition. Good prompts explicitly say: "Use the provided image as identity
+and style reference, not as the composition to copy." Then describe the changed
+camera, action, pose, and environment.
+
+For image chains, do not generate all keyframes before the hero is approved. A
+bad anchor contaminates every downstream image and makes the video expensive to
+recover.
 
 ### Strategy 3 — Seed Locking
 
@@ -154,16 +165,19 @@ optimized for image/video generation providers.
 3. **Inconsistent characters** — Without reference images, the same character will look different each time. Always use the hero reference strategy
 4. **Over-prompting** — Long, complex prompts produce unpredictable results. Keep to 2-3 sentences
 5. **Over-unifying prompts** — Forcing the exact same style phrase into every prompt makes scenes look samey. Keep the visual system consistent, but let each scene express its own subject, shot, and emotional beat.
+6. **Reference-image copying** — If a reference prompt mostly says "preserve the same image," Kontext-style tools may recreate the prior frame. State what the reference is for, then force a visible scene progression.
+7. **Batching before audio** — For timed shorts, generate narration first and measure it before deciding final clip_count and image_count.
 
 ## Applying to OpenMontage
 
 When using the `image_selector` tool in the asset stage:
 
 1. **Design the visual system first** from the proposal or custom playbook: mood, palette, texture, motion energy
-2. **Generate a hero image first** at highest quality, use as reference for all others
-3. **Use `1920x1088`** for 16:9 video frames (FLUX multiple-of-16 requirement)
-4. **Never request text in images** — add text overlays in the compose stage
-5. **Budget check** — estimate total image cost before generating; switch to local diffusers if over budget
-6. **Iterate with klein** during planning, finalize with pro
-7. **Keep prompts to 2-3 sentences** — scene-specific camera/lighting + adapted visual anchor + concrete subject
-8. **Match the scene plan** — each image maps to a specific scene in the script
+2. **Generate a hero image first** at highest quality, inspect it, and get approval when identity/style is subjective
+3. **Generate narration before the full image chain** so clip_count and image_count are based on actual audio duration
+4. **Use `1920x1088`** for 16:9 video frames (FLUX multiple-of-16 requirement)
+5. **Never request text in images** — add text overlays in the compose stage
+6. **Budget check** — estimate total image cost before generating; switch to local diffusers if over budget
+7. **Iterate with klein** during planning, finalize with pro
+8. **Keep prompts concise but complete** — scene-specific camera/lighting + adapted visual anchor + concrete subject
+9. **Match the scene plan** — each image maps to a specific scene in the script

@@ -89,6 +89,40 @@ Q4: "[subject] [mood hint]" (short film OR brand film OR trailer) award OR festi
 - What works emotionally (pacing, reveal structure, tension arc)
 - Relevance to the user's brief
 
+### Step 2b: Real Appearance Reference Mining
+
+**Goal:** Lock down what the subject, product, place, or creature actually looks like
+before any generated image prompt is written.
+
+This is mandatory for generated continuity reels. The agent must inspect real images,
+not just articles, because the canonical identity image depends on concrete visual
+facts.
+
+```
+SEARCH BATCH 1B — Appearance References
+
+Q-A: "[subject] photo" OR "[subject] close up" OR "[subject] macro"
+     -> Find: real-world appearance, anatomy, markings, proportions.
+
+Q-B: "[subject] side view" OR "[subject] full body" OR "[subject] front view"
+     -> Find: neutral canonical reference candidates.
+
+Q-C: "[subject] habitat" OR "[subject] environment" OR "[subject] natural habitat"
+     -> Find: believable surroundings and environmental anchors.
+```
+
+For each useful appearance reference, record:
+- URL and source title.
+- Whether it is `canonical_candidate`, `macro_detail`, `environment_reference`,
+  or `action_reference`.
+- The visible traits that must survive generation (shape, colors, markings,
+  proportions, scale cues).
+- If downloaded/saved locally, the project-relative `saved_path`.
+
+Do not copy copyrighted images into the final video unless the asset license permits it.
+These images are research references for prompting and continuity, not default final
+assets.
+
 ### Step 3: Sound and Music Landscape
 
 **Goal:** Understand the audio palette for this mood.
@@ -185,7 +219,8 @@ Compile all URLs used. Minimum 5 sources.
 Build the `research_brief` artifact per the schema. Include:
 
 1. `research_summary` — one paragraph capturing the strongest creative direction found
-2. All sections from Steps 2-8
+2. `visual_references` — cinematic references plus real appearance references from Step 2b
+3. All sections from Steps 2-8
 
 Validate against `schemas/artifacts/research_brief.schema.json` before submitting.
 
@@ -204,3 +239,10 @@ Validate against `schemas/artifacts/research_brief.schema.json` before submittin
 - **Ignoring the source reality**: If the user has no footage and no video generation, the research should account for still-led approaches — not ignore the constraint.
 - **Generic mood words**: "Dark and moody" is not a direction. "Low-key tungsten lighting with shallow depth of field, inspired by Fincher's title sequences" is a direction.
 - **Skipping audio research**: Cinematic videos live and die by their audio. The mood board is incomplete without sound direction.
+- **Skipping real image inspection**: Generated continuity reels drift when the canonical
+  image is based only on text facts. Always inspect and record what the subject actually
+  looks like before generation.
+
+## Approved channel opportunity import
+
+When a run supplies a selected, user-approved channel opportunity and a hashed channel snapshot, use `metadata.research_scope: topic_only_from_approved_opportunity`. Include `approved_opportunity_id`, integer `approved_opportunity_version`, and `channel_snapshot_sha256`. Research biological facts, limitations and appearance for that topic; inherit saved audience/style/voice decisions. Do not repeat competitor, audience-comment, voice or palette discovery. Unestablished market gaps, saturated angles and sourced audience questions remain empty arrays; never fabricate entries to satisfy quotas. This mode still requires three factual data points, three sources and one grounded angle. Without this explicit provenance the full research contract applies.

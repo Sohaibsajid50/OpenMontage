@@ -323,3 +323,7 @@ Put dialogue in quotation marks: `Character says: "Hello world."`
          muted earth tones with a cold blue-grey palette
 [Audio]: Rope creaking, water lapping, distant gull cries, wind
 ```
+
+## Continuity Reel
+
+For recurring subjects, read `skills/pipelines/continuity-reel/asset-director.md` and `skills/pipelines/continuity-reel/visual-production-review.md`. For Kling, also read `skills/creative/prompting/kling-prompting.md`. Inspect the hardest essential action before batching.

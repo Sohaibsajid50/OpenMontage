@@ -1,3 +1,5 @@
+> **Continuity Reel fork:** Includes the custom recurring-subject pipeline and production improvements. Start with [setup and workflow](docs/CONTINUITY_REEL_FORK.md).
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/monty-dark.svg">

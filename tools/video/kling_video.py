@@ -42,10 +42,11 @@ class KlingVideo(BaseTool):
     )
     agent_skills = ["ai-video-gen"]
 
-    capabilities = ["text_to_video", "image_to_video"]
+    capabilities = ["text_to_video", "image_to_video", "first_last_frame_to_video"]
     supports = {
         "text_to_video": True,
         "image_to_video": True,
+        "first_last_frame_to_video": True,
         "native_audio": True,
         "cinematic_quality": True,
     }
@@ -64,12 +65,12 @@ class KlingVideo(BaseTool):
             "prompt": {"type": "string"},
             "operation": {
                 "type": "string",
-                "enum": ["text_to_video", "image_to_video"],
+                "enum": ["text_to_video", "image_to_video", "first_last_frame_to_video"],
                 "default": "text_to_video",
             },
             "model_variant": {
                 "type": "string",
-                "enum": ["v3/standard", "v2.1/master", "v2.1/pro", "v2.1/standard"],
+                "enum": ["v3/standard", "v2.5-turbo/standard", "v2.1/master", "v2.1/pro", "v2.1/standard"],
                 "default": "v3/standard",
             },
             "duration": {
@@ -78,12 +79,36 @@ class KlingVideo(BaseTool):
                 "default": "5",
                 "description": "Duration in seconds",
             },
+            "generate_audio": {
+                "type": "boolean",
+                "default": False,
+                "description": "Whether to request native Kling audio. OpenMontage continuity reels normally keep this false because narration/music are generated separately.",
+            },
             "aspect_ratio": {
                 "type": "string",
                 "enum": ["16:9", "9:16", "1:1"],
                 "default": "16:9",
             },
             "image_url": {"type": "string", "description": "Reference image URL for image_to_video"},
+            "image_path": {"type": "string", "description": "Local reference image path for image_to_video"},
+            "start_image_url": {
+                "type": "string",
+                "description": "Start frame image URL for Kling v3 image-to-video",
+            },
+            "end_image_url": {
+                "type": "string",
+                "description": "Optional end frame image URL for Kling v3 image-to-video",
+            },
+            "first_frame_url": {"type": "string"},
+            "first_frame_path": {
+                "type": "string",
+                "description": "First frame image for first/last-frame video generation",
+            },
+            "last_frame_url": {"type": "string"},
+            "last_frame_path": {
+                "type": "string",
+                "description": "Last frame image for first/last-frame video generation",
+            },
             "output_path": {"type": "string"},
         },
     }
@@ -107,6 +132,14 @@ class KlingVideo(BaseTool):
     def estimate_cost(self, inputs: dict[str, Any]) -> float:
         variant = inputs.get("model_variant", "v3/standard")
         duration = int(inputs.get("duration", "5"))
+        if variant == "v2.5-turbo/standard":
+            return round(0.042 * duration, 4)
+        if variant == "v3/standard":
+            if inputs.get("voice_id") and inputs.get("generate_audio"):
+                return round(0.154 * duration, 4)
+            if inputs.get("generate_audio"):
+                return round(0.126 * duration, 4)
+            return round(0.084 * duration, 4)
         if "master" in variant:
             return 0.30 * (duration / 5)
         if "pro" in variant:
@@ -125,21 +158,59 @@ class KlingVideo(BaseTool):
             )
 
         import requests
+        from tools.video._shared import upload_image_fal
 
         start = time.time()
         operation = inputs.get("operation", "text_to_video")
         variant = inputs.get("model_variant", "v3/standard")
+        if variant == "v2.5-turbo/standard" and (
+            operation != "image_to_video"
+            or inputs.get("generate_audio")
+            or any(inputs.get(k) for k in ("end_image_url", "last_frame_url", "last_frame_path"))
+        ):
+            return ToolResult(success=False, error="Kling 2.5 Turbo Standard supports single-image i2v without native audio or an end frame.")
         # fal.ai uses hyphens in endpoint paths (text-to-video, not text_to_video)
-        operation_path = operation.replace("_", "-")
+        endpoint_operation = "image_to_video" if operation == "first_last_frame_to_video" else operation
+        operation_path = endpoint_operation.replace("_", "-")
         model_path = f"kling-video/{variant}/{operation_path}"
 
         payload: dict[str, Any] = {"prompt": inputs["prompt"]}
         if inputs.get("duration"):
             payload["duration"] = inputs["duration"]
-        if inputs.get("aspect_ratio"):
+        if inputs.get("aspect_ratio") and variant != "v2.5-turbo/standard":
             payload["aspect_ratio"] = inputs["aspect_ratio"]
-        if operation == "image_to_video" and inputs.get("image_url"):
-            payload["image_url"] = inputs["image_url"]
+        if inputs.get("generate_audio") is not None and variant != "v2.5-turbo/standard":
+            payload["generate_audio"] = bool(inputs["generate_audio"])
+
+        def image_value(url_key: str, path_key: str) -> str | None:
+            if inputs.get(url_key):
+                return str(inputs[url_key])
+            if inputs.get(path_key):
+                return upload_image_fal(str(inputs[path_key]))
+            return None
+
+        if endpoint_operation == "image_to_video":
+            start_image = (
+                inputs.get("start_image_url")
+                or image_value("first_frame_url", "first_frame_path")
+                or image_value("image_url", "image_path")
+            )
+            end_image = inputs.get("end_image_url") or image_value("last_frame_url", "last_frame_path")
+
+            if not start_image:
+                return ToolResult(
+                    success=False,
+                    error="Kling image_to_video requires image_url/image_path or start/first frame input",
+                )
+
+            if str(variant).startswith("v3/"):
+                payload["start_image_url"] = start_image
+                if end_image:
+                    payload["end_image_url"] = end_image
+            else:
+                payload["image_url"] = start_image
+                if end_image:
+                    payload["tail_image_url"] = end_image
 
         headers = {
             "Authorization": f"Key {api_key}",
@@ -200,6 +271,7 @@ class KlingVideo(BaseTool):
                 "prompt": inputs["prompt"],
                 "operation": operation,
                 "aspect_ratio": inputs.get("aspect_ratio", "16:9"),
+                "generate_audio": bool(inputs.get("generate_audio", False)),
                 "output": str(output_path),
                 "output_path": str(output_path),
                 "format": "mp4",

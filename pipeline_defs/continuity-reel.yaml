@@ -1,0 +1,255 @@
+name: continuity-reel
+version: "1.3"
+description: >
+  Fully AI-generated cinematic short built around recurring visual entities — the same
+  animal, character, or object returning across many shots with locked identity (e.g. the
+  same harpy eagle from an eye macro to a full-wingspan launch). Combines a visual_memory
+  entity registry, star-topology reference conditioning for identity continuity, Kling
+  image-to-video motion, and one continuous narration take with word-by-word captions.
+  Distinct from animated-explainer (charts/diagrams) and cinematic (real source footage).
+category: generated
+stability: beta
+default_checkpoint_policy: guided
+
+reference_input:
+  supported: true
+  analysis_depth: deep
+  analysis_tools:
+    - video_analyzer
+    - transcript_fetcher
+    - video_downloader
+    - scene_detect
+    - frame_sampler
+
+orchestration:
+  mode: executive-producer
+  skill: pipelines/cinematic/executive-producer
+  budget_default_usd: 3.00
+  max_revisions_per_stage: 3
+  max_send_backs: 3
+  max_wall_time_minutes: 20
+
+extensions:
+  custom_scripts: true
+  custom_playbooks: true
+  custom_skills: true
+  custom_tools: false
+
+required_skills:
+  - pipelines/cinematic/executive-producer
+  - pipelines/cinematic/research-director
+  - pipelines/cinematic/proposal-director
+  - pipelines/continuity-reel/visual-production-review
+  - pipelines/continuity-reel/audio-direction
+  - pipelines/continuity-reel/script-director
+  - pipelines/continuity-reel/scene-director
+  - pipelines/continuity-reel/asset-director
+  - pipelines/continuity-reel/edit-director
+  - pipelines/continuity-reel/compose-director
+  - pipelines/cinematic/publish-director
+  - meta/reviewer
+  - meta/checkpoint-protocol
+
+compatible_playbooks:
+  recommended:
+    - clean-professional
+  also_works:
+    - flat-motion-graphics
+  custom_allowed: true
+
+stages:
+  - name: research
+    skill: pipelines/cinematic/research-director
+    produces:
+      - research_brief
+    tools_available:
+      - web_search
+    checkpoint_required: false
+    human_approval_default: false
+    review_focus:
+      - Real-world reference for the subject's actual appearance (anatomy, color, markings)
+      - Reference images saved or linked with notes on what the subject/product actually looks like
+      - At least 3 distinct visual directions for the recurring entity
+    success_criteria:
+      - Schema-valid research_brief artifact
+      - research_brief.visual_references includes real appearance references usable for generation
+
+  - name: proposal
+    skill: pipelines/cinematic/proposal-director
+    required_artifacts_in:
+      - research_brief
+    produces:
+      - proposal_packet
+      - decision_log
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Voice selection source and musical emotional arc are explicit; existing user approvals are honored
+      - Recurring entities identified and named
+      - Motion-required delivery is explicit (i2v for hero beats)
+      - Itemized cost estimate (canonical images + derived views + i2v clips + narration)
+      - Current exact-endpoint pricing includes generated seconds, reusable samples, retries, and unresolved reservations within the user cap
+    success_criteria:
+      - Schema-valid proposal_packet with motion_required flag
+      - approval.status approved before proceeding
+
+  - name: script
+    skill: pipelines/continuity-reel/script-director
+    required_artifacts_in:
+      - proposal_packet
+    produces:
+      - script
+    tools_available:
+      - transcriber
+      - scene_detect
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - First beat shows the selected behavior or consequence before biography, habitat, or setup
+      - Hook words and hook visuals make the same claim at the same moment
+      - Hook mode is explicitly selected as spectacle_montage or impossible_tableau
+      - The body answers the opening question through relevant evidence rather than unrelated impressive facts
+      - Claim-to-visual map records source uncertainty, essential visible evidence, generation risk, and rejection conditions
+      - Documentary pacing is a planning estimate; final timing follows the selected voice performance
+    success_criteria:
+      - Schema-valid script artifact with metadata.claim_visual_map and an identified hardest indispensable shot
+      - First section is beat_role hook and metadata records hook_mode, selected_hook_visual, and identity reveal timing
+      - Videos longer than 20 seconds include a re_hook beat around 8-12 seconds
+
+  - name: scene_plan
+    skill: pipelines/continuity-reel/scene-director
+    required_artifacts_in:
+      - script
+    optional_artifacts_in:
+      - proposal_packet
+      - video_analysis_brief
+    produces:
+      - scene_plan
+      - visual_memory
+    tools_available:
+      - frame_sampler
+      - scene_detect
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - First scene realizes the selected hook mode and makes the opening claim visually legible
+      - Behavior appears before establishing context or canonical identity introduction
+      - Every recurring subject has a visual_memory entity with ONE neutral canonical
+      - Identity chained ONLY for same-object recurrences (not same-concept)
+      - Shot variety per entity (extreme_close_up through wide)
+      - Environment and screen-language variety planned (establishing, macro, POV, split/composite, aftermath, hero)
+      - Extreme-crop derived views flagged for canonical cropping
+      - Hero moment marked and given a video (motion) treatment
+      - Hero behavior contracts specify setup, observable action, result, and physical-contact rejection conditions
+      - Reference shot map records observed geometry, focus/background, and narrative function; unknown analysis remains unknown
+    success_criteria:
+      - Schema-valid scene_plan AND visual_memory artifacts
+      - First scene has narrative_role hook and the plan records hook_mode
+      - Each entity has a canonical_scene_id; each derived_view references the canonical
+      - metadata.claim_coverage maps narration sections to realizing scenes; causal continuity exceptions explain deliberate repeated framing
+
+  - name: assets
+    skill: pipelines/continuity-reel/asset-director
+    required_artifacts_in:
+      - scene_plan
+      - visual_memory
+      - script
+    produces:
+      - asset_manifest
+    required_tools:
+      - image_selector
+    optional_tools:
+      - video_selector
+      - music_gen
+      - tts_selector
+      - transcriber
+    tools_available:
+      - image_selector
+      - video_selector
+      - music_gen
+      - tts_selector
+      - transcriber
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Canonicals generated first; derived views condition on the canonical (star topology)
+      - Derived prompts request a NEW composition (identity-not-composition), not a copy
+      - Derived prompts change both the shot and the environment/action while preserving the canonical identity
+      - Measured continuity scores and manual anatomy/contact checks are separate; unavailable checks are explicitly recorded
+      - Macros produced by cropping the canonical, not by prompt alone
+      - Motion beats use real Kling image_to_video, not still zooms
+      - Hardest causal motion is inspected before the remaining batch; identity similarity does not substitute for action correctness
+      - Every retry and reused reference has a recorded observed outcome, selected take, and unresolved limitation
+      - Narration is ONE continuous take with approved voice identity, performance settings, and verified alignment
+      - Approved instrumental music carries the emotional arc; source level and mix are assessed before regeneration
+    success_criteria:
+      - Schema-valid asset_manifest with entity linkage for visual assets and measured continuity scores where available; missing checks and unresolved quality failures remain explicit
+      - All asset files exist on disk (including background music)
+      - Every hero_moment scene has a real motion clip
+
+  - name: edit
+    skill: pipelines/continuity-reel/edit-director
+    required_artifacts_in:
+      - scene_plan
+      - asset_manifest
+    produces:
+      - edit_decisions
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - hook_treatment explicitly records proof timing, narration entry, caption mode, transition strategy, music entry, and SFX strategy
+      - Hook transitions and captions match the selected mode instead of applying one universal grammar
+      - Scene windows and captions are rebuilt from the current narration word-timestamps after any voice revision
+      - Long beats flagged for motion STRETCH (never freeze-frame)
+      - Caption phrase length, line count, and safe area follow the approved reference or hook treatment; no cumulative paragraph coverage
+      - One continuous narration track carries flow across cuts
+      - Audio plan records source levels, normalization, music gain, ducking parameters, fades, loop joins, and motivated ambience
+      - Audio is intentionally active from frame one unless designed silence is recorded
+      - Ducking metadata is true only when actual sidechain or volume-envelope ducking is planned
+    success_criteria:
+      - Schema-valid edit_decisions artifact
+
+  - name: compose
+    skill: pipelines/continuity-reel/compose-director
+    required_artifacts_in:
+      - edit_decisions
+      - asset_manifest
+    produces:
+      - render_report
+      - final_review
+    tools_available:
+      - video_compose
+      - audio_mixer
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Opening executes hook_treatment; spot-check frames at 0s, 1s, 3s, and 5s
+      - Final cuts preserve causal proof; actual scaling/cropping preserves contact and caption readability
+      - Long beats stretched (no freeze-frame pauses); no gaps > 0.7s
+      - Approved phrase captions burned via image overlays and checked against the actual frames
+      - Cuts or dissolves follow the selected hook grammar and causal beat changes
+      - Opening audio has useful energy immediately; ambience bed carries intentional narration gaps
+      - Render report describes fixed music versus real ducking truthfully
+      - Final mix listening checks assess narrator fit, intelligibility, audible musical emotion, pumping, and joins; unassessed checks are not passes
+      - Output exists and passes ffprobe validation
+    success_criteria:
+      - Schema-valid render_report
+      - Output video exists and validates
+      - Unexplained silence over ~0.7s is investigated; noise presence alone is not an audio quality pass
+      - Schema-valid final_review distinguishes technical checks, listening evidence, user feedback, and remaining limitations
+
+  - name: publish
+    skill: pipelines/cinematic/publish-director
+    required_artifacts_in:
+      - render_report
+    produces:
+      - publish_log
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Export package structured correctly
+    success_criteria:
+      - Schema-valid publish_log

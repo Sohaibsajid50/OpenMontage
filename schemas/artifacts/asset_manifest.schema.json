@@ -4,59 +4,172 @@
   "title": "Asset Manifest",
   "description": "Inventory of generated/sourced assets produced by the Asset Generator.",
   "type": "object",
-  "required": ["version", "assets"],
+  "required": [
+    "version",
+    "assets"
+  ],
   "properties": {
-    "version": { "type": "string", "const": "1.0" },
+    "version": {
+      "type": "string",
+      "const": "1.0"
+    },
     "assets": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "type", "path", "source_tool", "scene_id"],
+        "required": [
+          "id",
+          "type",
+          "path",
+          "source_tool",
+          "scene_id"
+        ],
         "properties": {
-          "id": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
           "type": {
             "type": "string",
-            "enum": ["image", "video", "audio", "narration", "music", "sfx", "diagram", "animation", "3d_asset", "3d_world", "code_snippet", "subtitle", "font", "lut"]
+            "enum": [
+              "image",
+              "video",
+              "audio",
+              "narration",
+              "music",
+              "sfx",
+              "diagram",
+              "animation",
+              "3d_asset",
+              "3d_world",
+              "code_snippet",
+              "subtitle",
+              "font",
+              "lut"
+            ]
           },
-          "path": { "type": "string", "description": "Relative path within the pipeline project directory" },
-          "source_tool": { "type": "string" },
-          "scene_id": { "type": "string" },
-          "prompt": { "type": "string", "description": "Generation prompt if AI-generated" },
-          "seed": { "type": "integer", "description": "Seed if applicable" },
-          "model": { "type": "string", "description": "Model used for generation" },
-          "cost_usd": { "type": "number", "minimum": 0 },
-          "duration_seconds": { "type": "number", "minimum": 0 },
-          "resolution": { "type": "string" },
-          "format": { "type": "string" },
-          "quality_score": { "type": "number", "minimum": 0, "maximum": 1 },
-          "subtype": { "type": "string", "description": "Sub-classification (e.g. 'background', 'stock', 'generated')" },
-          "generation_summary": { "type": "string", "description": "Brief summary of how the asset was generated or sourced" },
-          "provider": { "type": "string", "description": "Provider name (e.g. pixabay, google_imagen)" },
-          "license": { "type": "string", "description": "License type (e.g. Pixabay License, CC0)" },
-          "original_url": { "type": "string", "description": "Source URL if downloaded from a stock service" },
+          "path": {
+            "type": "string",
+            "description": "Relative path within the pipeline project directory"
+          },
+          "source_tool": {
+            "type": "string"
+          },
+          "scene_id": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Generation prompt if AI-generated"
+          },
+          "seed": {
+            "type": "integer",
+            "description": "Seed if applicable"
+          },
+          "model": {
+            "type": "string",
+            "description": "Model used for generation"
+          },
+          "cost_usd": {
+            "type": "number",
+            "minimum": 0
+          },
+          "duration_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "quality_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "subtype": {
+            "type": "string",
+            "description": "Sub-classification (e.g. 'background', 'stock', 'generated')"
+          },
+          "generation_summary": {
+            "type": "string",
+            "description": "Brief summary of how the asset was generated or sourced"
+          },
+          "provider": {
+            "type": "string",
+            "description": "Provider name (e.g. pixabay, google_imagen)"
+          },
+          "license": {
+            "type": "string",
+            "description": "License type (e.g. Pixabay License, CC0)"
+          },
+          "original_url": {
+            "type": "string",
+            "description": "Source URL if downloaded from a stock service"
+          },
           "voice_performance": {
             "type": "object",
             "description": "Applied voice-performance contract for narration assets.",
             "properties": {
-              "source_section_id": { "type": "string" },
-              "delivery_cues_applied": { "type": "boolean" },
-              "provider_text_used": { "type": "boolean" },
+              "source_section_id": {
+                "type": "string"
+              },
+              "delivery_cues_applied": {
+                "type": "boolean"
+              },
+              "provider_text_used": {
+                "type": "boolean"
+              },
               "provider_settings": {
                 "type": "object",
                 "additionalProperties": true
               },
-              "sample_approved": { "type": "boolean" },
-              "sample_path": { "type": "string" },
-              "review_notes": { "type": "string" }
+              "sample_approved": {
+                "type": "boolean"
+              },
+              "sample_path": {
+                "type": "string"
+              },
+              "review_notes": {
+                "type": "string"
+              }
             },
             "additionalProperties": false
+          },
+          "visual_entity_id": {
+            "type": "string",
+            "description": "OPTIONAL. The recurring entity this asset depicts (from visual_memory)."
+          },
+          "entity_role": {
+            "type": "string",
+            "enum": [
+              "canonical",
+              "derived"
+            ],
+            "description": "OPTIONAL. canonical = the reference asset for the entity; derived = generated by conditioning on the canonical."
+          },
+          "reference_path": {
+            "type": "string",
+            "description": "OPTIONAL. Path to the canonical asset this one was conditioned on (image-to-image reference)."
+          },
+          "continuity_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "OPTIONAL. CLIP cosine similarity vs the canonical asset. Continuity gate output."
           }
         },
         "additionalProperties": false
       }
     },
-    "total_cost_usd": { "type": "number", "minimum": 0 },
-    "metadata": { "type": "object" }
+    "total_cost_usd": {
+      "type": "number",
+      "minimum": 0
+    },
+    "metadata": {
+      "type": "object"
+    }
   },
   "additionalProperties": false
 }

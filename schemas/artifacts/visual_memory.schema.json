@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/visual_memory",
+  "title": "Visual Memory",
+  "description": "Production-local registry of recurring visual entities and their canonical references. Gives a pipeline object-identity continuity (the same subject across many shots), distinct from style consistency. Populated by the scene planner (declares entities) and the asset director (binds canonical asset paths).",
+  "type": "object",
+  "required": ["version", "visual_entities"],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "visual_entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "kind"],
+        "properties": {
+          "id": { "type": "string", "description": "Stable token, e.g. HARPY_EAGLE_01" },
+          "label": { "type": "string", "description": "Human description of the entity" },
+          "kind": {
+            "type": "string",
+            "enum": ["generated", "rendered", "style_anchor"],
+            "description": "generated = AI image reused via reference conditioning; rendered = deterministic SVG/Remotion re-render (diagrams/text — avoids AI text hallucination); style_anchor = environment/mood carried by prompt, not a single object."
+          },
+          "reuse_topology": {
+            "type": "string",
+            "enum": ["canonical_anchor", "progressive"],
+            "default": "canonical_anchor",
+            "description": "canonical_anchor = every derived view conditions on the ONE canonical asset (prevents drift). progressive = each view chains from the previous (deliberate transformation over time)."
+          },
+          "generator_locked": { "type": "string", "description": "Provider/model pinned for ALL views of this entity, to avoid cross-provider style leak (e.g. flux_kontext)." },
+          "canonical_scene_id": { "type": "string", "description": "The scene that introduces and defines the entity." },
+          "canonical_asset_path": { "type": "string", "description": "Bound by the asset director after the canonical asset is generated." },
+          "identity_anchors": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "The invariant traits that MUST persist across every view (e.g. grey-white facial disc, twin black crown feathers)."
+          },
+          "allowed_variations": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "What is permitted to change between views (shot size, camera angle, pose)."
+          },
+          "continuity_threshold": {
+            "type": "number",
+            "minimum": 0, "maximum": 1, "default": 0.83,
+            "description": "Minimum CLIP cosine similarity vs canonical for a derived view to pass the continuity gate."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "scene_links": {
+      "type": "array",
+      "description": "Maps scenes to entities. Mirrors scene_plan.reuse; lets the asset director order generation canonical-first.",
+      "items": {
+        "type": "object",
+        "required": ["scene_id", "entity", "role"],
+        "properties": {
+          "scene_id": { "type": "string" },
+          "entity": { "type": "string" },
+          "role": { "type": "string", "enum": ["canonical_introduction", "derived_view"] },
+          "reference": { "type": "string", "description": "'canonical' or a specific asset id." },
+          "variation": { "type": "string" },
+          "hero": { "type": "boolean", "default": false }
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}

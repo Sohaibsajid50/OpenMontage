@@ -251,6 +251,7 @@ If the folder has tracks, the proposal and asset stages should present them as o
 | `clip-factory` | Many clips from one long source | beta |
 | `podcast-repurpose` | Podcast highlights and derivatives | beta |
 | `cinematic` | Trailer, teaser, and mood-led edits | production |
+| `continuity-reel` | Generated cinematic reels with recurring subject identity and visible action | beta |
 | `animation` | Motion-graphics and animation-first videos | production |
 | `character-animation` | Local rigged cartoon characters and reusable character acting | beta |
 | `hybrid` | Source footage plus support visuals | production |
@@ -718,3 +719,7 @@ The `.agents/skills/` directory is large. When you're not coming in through a to
 - Do not present a single unavailable tool in isolation. Always show the full capability picture: "X of Y providers configured for this capability."
 - Do not skip the Provider Menu at preflight. The user must see what they have AND what they could unlock.
 - Do not change provider, model, or render path without telling the user first and getting approval when the change is material.
+
+## Continuity Reel fork policy
+
+For `continuity-reel`, read [the fork workflow](docs/CONTINUITY_REEL_FORK.md) before research. It defines full-script, scene, sample and publishing approvals and essential-shot repair limits. Keep the current engine schema and runtime contracts.

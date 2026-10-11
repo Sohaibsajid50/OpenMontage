@@ -4,30 +4,68 @@
   "title": "Edit Decisions",
   "description": "Editorial decisions produced by the Edit Agent.",
   "type": "object",
-  "required": ["version", "cuts", "render_runtime"],
+  "required": [
+    "version",
+    "cuts",
+    "render_runtime"
+  ],
   "properties": {
-    "version": { "type": "string", "const": "1.0" },
+    "version": {
+      "type": "string",
+      "const": "1.0"
+    },
     "cuts": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "source", "in_seconds", "out_seconds"],
+        "required": [
+          "id",
+          "source",
+          "in_seconds",
+          "out_seconds"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "source": { "type": "string", "description": "Source file path or asset-manifest ID" },
-          "in_seconds": { "type": "number", "minimum": 0 },
-          "out_seconds": { "type": "number", "minimum": 0 },
-          "speed": { "type": "number", "minimum": 0.1, "default": 1.0 },
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source file path or asset-manifest ID"
+          },
+          "in_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "out_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "speed": {
+            "type": "number",
+            "minimum": 0.1,
+            "default": 1.0
+          },
           "layer": {
             "type": "string",
-            "enum": ["primary", "overlay", "background"],
+            "enum": [
+              "primary",
+              "overlay",
+              "background"
+            ],
             "default": "primary"
           },
           "transform": {
             "type": "object",
             "properties": {
-              "scale": { "type": "number", "minimum": 0, "default": 1.0 },
-              "position": { "type": "string", "default": "center" },
+              "scale": {
+                "type": "number",
+                "minimum": 0,
+                "default": 1.0
+              },
+              "position": {
+                "type": "string",
+                "default": "center"
+              },
               "animation": {
                 "type": "string",
                 "description": "Motion applied to still images (e.g. ken-burns-slow-zoom, pan-left, static)"
@@ -35,10 +73,18 @@
               "crop": {
                 "type": "object",
                 "properties": {
-                  "x": { "type": "number" },
-                  "y": { "type": "number" },
-                  "width": { "type": "number" },
-                  "height": { "type": "number" }
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "width": {
+                    "type": "number"
+                  },
+                  "height": {
+                    "type": "number"
+                  }
                 }
               }
             },
@@ -61,7 +107,33 @@
             "type": "string",
             "description": "Backing color used behind this cut by composition runtimes"
           },
-          "reason": { "type": "string" }
+          "reason": {
+            "type": "string"
+          },
+          "speed_factor": {
+            "type": "number",
+            "minimum": 0.1
+          },
+          "fit": {
+            "type": "string",
+            "enum": [
+              "trim",
+              "stretch"
+            ]
+          },
+          "beat_role": {
+            "type": "string",
+            "enum": [
+              "hook",
+              "stakes",
+              "escalation",
+              "re_hook",
+              "turn",
+              "payoff",
+              "landing",
+              "call_to_action"
+            ]
+          }
         },
         "additionalProperties": false
       }
@@ -70,23 +142,53 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["asset_id", "start_seconds", "end_seconds", "position"],
+        "required": [
+          "asset_id",
+          "start_seconds",
+          "end_seconds",
+          "position"
+        ],
         "properties": {
-          "asset_id": { "type": "string" },
-          "start_seconds": { "type": "number", "minimum": 0 },
-          "end_seconds": { "type": "number", "minimum": 0 },
+          "asset_id": {
+            "type": "string"
+          },
+          "start_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
+          "end_seconds": {
+            "type": "number",
+            "minimum": 0
+          },
           "position": {
             "type": "object",
             "properties": {
-              "x": { "type": "number" },
-              "y": { "type": "number" },
-              "width": { "type": "number" },
-              "height": { "type": "number" }
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "width": {
+                "type": "number"
+              },
+              "height": {
+                "type": "number"
+              }
             },
-            "required": ["x", "y"]
+            "required": [
+              "x",
+              "y"
+            ]
           },
-          "animation": { "type": "string" },
-          "opacity": { "type": "number", "minimum": 0, "maximum": 1 }
+          "animation": {
+            "type": "string"
+          },
+          "opacity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
         },
         "additionalProperties": false
       }
@@ -102,11 +204,22 @@
               "type": "array",
               "items": {
                 "type": "object",
-                "required": ["asset_id", "start_seconds"],
+                "required": [
+                  "asset_id",
+                  "start_seconds"
+                ],
                 "properties": {
-                  "asset_id": { "type": "string" },
-                  "start_seconds": { "type": "number", "minimum": 0 },
-                  "end_seconds": { "type": "number", "minimum": 0 }
+                  "asset_id": {
+                    "type": "string"
+                  },
+                  "start_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "end_seconds": {
+                    "type": "number",
+                    "minimum": 0
+                  }
                 },
                 "additionalProperties": false
               }
@@ -116,21 +229,48 @@
         "music": {
           "type": "object",
           "properties": {
-            "asset_id": { "type": "string" },
-            "volume": { "type": "number", "minimum": 0, "maximum": 1 },
-            "fade_in_seconds": { "type": "number", "minimum": 0 },
-            "fade_out_seconds": { "type": "number", "minimum": 0 },
+            "asset_id": {
+              "type": "string"
+            },
+            "volume": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "fade_in_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "fade_out_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
             "ducking": {
               "oneOf": [
-                { "type": "boolean" },
+                {
+                  "type": "boolean"
+                },
                 {
                   "type": "object",
                   "properties": {
-                    "enabled": { "type": "boolean", "default": true },
-                    "threshold_db": { "type": "number" },
-                    "reduction_db": { "type": "number" },
-                    "attack_ms": { "type": "number", "minimum": 0 },
-                    "release_ms": { "type": "number", "minimum": 0 }
+                    "enabled": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "threshold_db": {
+                      "type": "number"
+                    },
+                    "reduction_db": {
+                      "type": "number"
+                    },
+                    "attack_ms": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "release_ms": {
+                      "type": "number",
+                      "minimum": 0
+                    }
                   },
                   "additionalProperties": false
                 }
@@ -143,12 +283,53 @@
           "items": {
             "type": "object",
             "properties": {
-              "asset_id": { "type": "string" },
-              "start_seconds": { "type": "number", "minimum": 0 },
-              "volume": { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0 }
+              "asset_id": {
+                "type": "string"
+              },
+              "start_seconds": {
+                "type": "number",
+                "minimum": 0
+              },
+              "volume": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 1.0
+              }
             },
             "additionalProperties": false
           }
+        },
+        "ambience": {
+          "type": "object",
+          "description": "Optional low-level environmental/noise-floor bed used to keep energy through natural narration pauses.",
+          "properties": {
+            "asset_id": {
+              "type": "string",
+              "description": "Asset-manifest ID if ambience is generated or sourced."
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "generated_asset",
+                "sourced_asset",
+                "compose_synthesized"
+              ]
+            },
+            "description": {
+              "type": "string"
+            },
+            "volume": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "target_silence_gap_seconds": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -156,16 +337,60 @@
     "subtitles": {
       "type": "object",
       "properties": {
-        "enabled": { "type": "boolean" },
-        "style": { "type": "string", "description": "Display style: sentence, word-by-word, karaoke" },
-        "source": { "type": "string", "description": "Path to subtitle file or asset ID" },
-        "font": { "type": "string" },
-        "font_size": { "type": "integer" },
-        "color": { "type": "string", "description": "Primary text color (hex or ASS format)" },
-        "outline_color": { "type": "string" },
-        "background": { "type": "string", "description": "Background color with optional alpha (e.g. #00000088)" },
-        "position": { "type": "string", "enum": ["top-center", "bottom-center", "center"] },
-        "max_words_per_line": { "type": "integer", "minimum": 1 }
+        "enabled": {
+          "type": "boolean"
+        },
+        "style": {
+          "type": "string",
+          "description": "Display style: sentence, word-by-word, karaoke"
+        },
+        "source": {
+          "type": "string",
+          "description": "Path to subtitle file or asset ID"
+        },
+        "font": {
+          "type": "string"
+        },
+        "font_size": {
+          "type": "integer"
+        },
+        "color": {
+          "type": "string",
+          "description": "Primary text color (hex or ASS format)"
+        },
+        "outline_color": {
+          "type": "string"
+        },
+        "background": {
+          "type": "string",
+          "description": "Background color with optional alpha (e.g. #00000088)"
+        },
+        "position": {
+          "type": "string",
+          "enum": [
+            "top-center",
+            "bottom-center",
+            "center"
+          ]
+        },
+        "max_words_per_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "caption_mode": {
+          "type": "string",
+          "enum": [
+            "phrase",
+            "kinetic_keywords",
+            "rolling_single_line"
+          ]
+        },
+        "hook_keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       },
       "additionalProperties": false
     },
@@ -173,11 +398,26 @@
       "type": "object",
       "description": "Legacy top-level music config. Prefer audio.music for new pipelines.",
       "properties": {
-        "asset_id": { "type": "string" },
-        "volume": { "type": "number", "minimum": 0, "maximum": 1 },
-        "ducking": { "type": "boolean", "default": true },
-        "fade_in_seconds": { "type": "number", "minimum": 0 },
-        "fade_out_seconds": { "type": "number", "minimum": 0 }
+        "asset_id": {
+          "type": "string"
+        },
+        "volume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ducking": {
+          "type": "boolean",
+          "default": true
+        },
+        "fade_in_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "fade_out_seconds": {
+          "type": "number",
+          "minimum": 0
+        }
       }
     },
     "transitions": {
@@ -186,52 +426,187 @@
       "items": {
         "type": "object",
         "properties": {
-          "type": { "type": "string" },
-          "at_seconds": { "type": "number" },
-          "duration_seconds": { "type": "number", "minimum": 0 }
+          "type": {
+            "type": "string"
+          },
+          "at_seconds": {
+            "type": "number"
+          },
+          "duration_seconds": {
+            "type": "number",
+            "minimum": 0
+          }
         },
-        "required": ["type", "at_seconds", "duration_seconds"]
+        "required": [
+          "type",
+          "at_seconds",
+          "duration_seconds"
+        ]
       }
     },
     "renderer_family": {
       "type": "string",
-      "enum": ["explainer-data", "explainer-teacher", "cinematic-trailer", "documentary-montage", "product-reveal", "screen-demo", "presenter", "animation-first"],
-      "description": "Locked at proposal stage — creative grammar for this deliverable. Preserved from proposal_packet; edit MUST NOT change without a logged decision."
+      "enum": [
+        "explainer-data",
+        "explainer-teacher",
+        "cinematic-trailer",
+        "documentary-montage",
+        "product-reveal",
+        "screen-demo",
+        "presenter",
+        "animation-first"
+      ],
+      "description": "Locked at proposal stage \u2014 creative grammar for this deliverable. Preserved from proposal_packet; edit MUST NOT change without a logged decision."
     },
     "render_runtime": {
       "type": "string",
-      "enum": ["remotion", "hyperframes", "ffmpeg"],
-      "description": "Locked at proposal stage — technical runtime that realizes renderer_family. Edit MUST carry this forward unchanged unless a logged render_runtime_selection decision overrides it."
+      "enum": [
+        "remotion",
+        "hyperframes",
+        "ffmpeg"
+      ],
+      "description": "Locked at proposal stage \u2014 technical runtime that realizes renderer_family. Edit MUST carry this forward unchanged unless a logged render_runtime_selection decision overrides it."
     },
     "composition_mode": {
       "type": "string",
-      "enum": ["templated", "atelier"],
-      "description": "Locked at proposal — HOW the composition is built. Edit MUST carry forward unchanged. 'atelier' routes video_compose to _render_via_atelier (no cut-schema, no stock registry); requires `bespoke` block below."
+      "enum": [
+        "templated",
+        "atelier"
+      ],
+      "description": "Locked at proposal \u2014 HOW the composition is built. Edit MUST carry forward unchanged. 'atelier' routes video_compose to _render_via_atelier (no cut-schema, no stock registry); requires `bespoke` block below."
     },
     "bespoke": {
       "type": "object",
-      "description": "Required when composition_mode='atelier'. Contract for the hand-authored, project-local Remotion render. See tools/video/video_compose.py → _render_via_atelier docstring.",
-      "required": ["entry", "composition_id", "art_direction"],
+      "description": "Required when composition_mode='atelier'. Contract for the hand-authored, project-local Remotion render. See tools/video/video_compose.py \u2192 _render_via_atelier docstring.",
+      "required": [
+        "entry",
+        "composition_id",
+        "art_direction"
+      ],
       "properties": {
-        "entry": { "type": "string", "description": "Path to the project-local Remotion entry .tsx (typically projects/<slug>/index.tsx). If outside remotion-composer/, auto-staged via directory junction/symlink at render time." },
-        "composition_id": { "type": "string", "description": "id registered in that entry's Root" },
-        "art_direction": { "type": "string", "description": "Short commitment to a fresh visual language (or a path to art-direction.md). REQUIRED — enforced by _run_atelier_checks." },
-        "props_path": { "type": "string", "description": "Absolute path to a props JSON (Remotion --props)" },
-        "public_dir": { "type": "string", "description": "Per-project public dir (avoids copying the bloated shared remotion-composer/public/)" },
-        "scale": { "type": "number", "minimum": 0.1, "maximum": 1.0 },
-        "crf": { "type": "integer", "minimum": 0, "maximum": 51 },
-        "concurrency": { "type": "integer", "minimum": 1 }
+        "entry": {
+          "type": "string",
+          "description": "Path to the project-local Remotion entry .tsx (typically projects/<slug>/index.tsx). If outside remotion-composer/, auto-staged via directory junction/symlink at render time."
+        },
+        "composition_id": {
+          "type": "string",
+          "description": "id registered in that entry's Root"
+        },
+        "art_direction": {
+          "type": "string",
+          "description": "Short commitment to a fresh visual language (or a path to art-direction.md). REQUIRED \u2014 enforced by _run_atelier_checks."
+        },
+        "props_path": {
+          "type": "string",
+          "description": "Absolute path to a props JSON (Remotion --props)"
+        },
+        "public_dir": {
+          "type": "string",
+          "description": "Per-project public dir (avoids copying the bloated shared remotion-composer/public/)"
+        },
+        "scale": {
+          "type": "number",
+          "minimum": 0.1,
+          "maximum": 1.0
+        },
+        "crf": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 51
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1
+        }
       }
     },
     "slideshow_risk_score": {
       "type": "object",
       "description": "Slideshow risk assessment from lib/slideshow_risk.py",
       "properties": {
-        "average": { "type": "number" },
-        "verdict": { "type": "string", "enum": ["strong", "acceptable", "revise", "fail"] }
+        "average": {
+          "type": "number"
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "strong",
+            "acceptable",
+            "revise",
+            "fail"
+          ]
+        }
       }
     },
-    "metadata": { "type": "object" }
+    "metadata": {
+      "type": "object"
+    },
+    "hook_treatment": {
+      "type": "object",
+      "required": [
+        "mode",
+        "proof_visible_at_seconds",
+        "narration_entry",
+        "caption_mode",
+        "transition_strategy",
+        "music_entry",
+        "sfx_strategy"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "spectacle_montage",
+            "impossible_tableau"
+          ]
+        },
+        "proof_visible_at_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "narration_entry": {
+          "type": "string",
+          "enum": [
+            "immediate",
+            "visual_cold_open"
+          ]
+        },
+        "caption_mode": {
+          "type": "string",
+          "enum": [
+            "phrase",
+            "kinetic_keywords",
+            "rolling_single_line"
+          ]
+        },
+        "transition_strategy": {
+          "type": "string",
+          "enum": [
+            "impact_cuts",
+            "held_proof_shot",
+            "hybrid"
+          ]
+        },
+        "music_entry": {
+          "type": "string",
+          "enum": [
+            "immediate_active",
+            "designed_silence"
+          ]
+        },
+        "sfx_strategy": {
+          "type": "string",
+          "enum": [
+            "impact_synchronized",
+            "transformation_synchronized",
+            "restrained",
+            "none"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
   },
   "additionalProperties": false
 }

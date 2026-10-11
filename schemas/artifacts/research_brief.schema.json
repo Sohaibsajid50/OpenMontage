@@ -4,9 +4,21 @@
   "title": "Research Brief",
   "description": "Structured web research findings that ground a video in real data, trends, and audience insights. Produced by the Research Director before any creative work begins.",
   "type": "object",
-  "required": ["version", "topic", "research_date", "landscape", "data_points", "audience_insights", "angles_discovered", "sources"],
+  "required": [
+    "version",
+    "topic",
+    "research_date",
+    "landscape",
+    "data_points",
+    "audience_insights",
+    "angles_discovered",
+    "sources"
+  ],
   "properties": {
-    "version": { "type": "string", "const": "1.0" },
+    "version": {
+      "type": "string",
+      "const": "1.0"
+    },
     "topic": {
       "type": "string",
       "description": "The core topic as stated by the user"
@@ -14,41 +26,70 @@
     "research_date": {
       "type": "string",
       "format": "date",
-      "description": "When the research was conducted — freshness matters"
+      "description": "When the research was conducted \u2014 freshness matters"
     },
     "landscape": {
       "type": "object",
       "description": "What already exists in the content landscape",
-      "required": ["existing_content", "saturated_angles", "underserved_gaps"],
+      "required": [
+        "existing_content",
+        "saturated_angles",
+        "underserved_gaps"
+      ],
       "properties": {
         "existing_content": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["title", "source", "angle", "what_it_covers"],
+            "required": [
+              "title",
+              "source",
+              "angle",
+              "what_it_covers"
+            ],
             "properties": {
-              "title": { "type": "string" },
-              "url": { "type": "string", "format": "uri" },
-              "source": { "type": "string", "description": "youtube, blog, tiktok, etc." },
-              "angle": { "type": "string", "description": "The narrative approach used" },
-              "what_it_covers": { "type": "string" },
-              "what_it_misses": { "type": "string" },
-              "engagement_signal": { "type": "string", "description": "View count, upvotes, comments — whatever is available" }
+              "title": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "source": {
+                "type": "string",
+                "description": "youtube, blog, tiktok, etc."
+              },
+              "angle": {
+                "type": "string",
+                "description": "The narrative approach used"
+              },
+              "what_it_covers": {
+                "type": "string"
+              },
+              "what_it_misses": {
+                "type": "string"
+              },
+              "engagement_signal": {
+                "type": "string",
+                "description": "View count, upvotes, comments \u2014 whatever is available"
+              }
             },
             "additionalProperties": false
           },
-          "minItems": 3,
-          "description": "Top existing content on this topic — at least 3 entries"
+          "description": "Top existing content on this topic \u2014 at least 3 entries"
         },
         "saturated_angles": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Angles that have been done to death — avoid these"
+          "items": {
+            "type": "string"
+          },
+          "description": "Angles that have been done to death \u2014 avoid these"
         },
         "underserved_gaps": {
           "type": "array",
-          "items": { "type": "string" },
-          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
           "description": "Angles or questions that existing content does NOT cover well"
         }
       },
@@ -62,12 +103,26 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["headline", "date", "relevance"],
+            "required": [
+              "headline",
+              "date",
+              "relevance"
+            ],
             "properties": {
-              "headline": { "type": "string" },
-              "url": { "type": "string", "format": "uri" },
-              "date": { "type": "string" },
-              "relevance": { "type": "string", "description": "Why this matters for our video" }
+              "headline": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "date": {
+                "type": "string"
+              },
+              "relevance": {
+                "type": "string",
+                "description": "Why this matters for our video"
+              }
             },
             "additionalProperties": false
           }
@@ -76,14 +131,28 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["platform", "topic_or_url", "sentiment"],
+            "required": [
+              "platform",
+              "topic_or_url",
+              "sentiment"
+            ],
             "properties": {
-              "platform": { "type": "string", "description": "reddit, hackernews, twitter, etc." },
-              "topic_or_url": { "type": "string" },
-              "sentiment": { "type": "string", "description": "What people feel about this — excitement, frustration, debate, confusion" },
+              "platform": {
+                "type": "string",
+                "description": "reddit, hackernews, twitter, etc."
+              },
+              "topic_or_url": {
+                "type": "string"
+              },
+              "sentiment": {
+                "type": "string",
+                "description": "What people feel about this \u2014 excitement, frustration, debate, confusion"
+              },
               "key_quotes": {
                 "type": "array",
-                "items": { "type": "string" },
+                "items": {
+                  "type": "string"
+                },
                 "description": "Direct quotes that capture the community's voice"
               }
             },
@@ -101,19 +170,41 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["claim", "source_url", "credibility"],
+        "required": [
+          "claim",
+          "source_url",
+          "credibility"
+        ],
         "properties": {
-          "claim": { "type": "string", "description": "The specific fact, statistic, or data point" },
-          "source_url": { "type": "string", "format": "uri" },
-          "source_name": { "type": "string", "description": "e.g., 'Stack Overflow 2025 Developer Survey'" },
+          "claim": {
+            "type": "string",
+            "description": "The specific fact, statistic, or data point"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "source_name": {
+            "type": "string",
+            "description": "e.g., 'Stack Overflow 2025 Developer Survey'"
+          },
           "credibility": {
             "type": "string",
-            "enum": ["primary_source", "secondary_source", "anecdotal"],
+            "enum": [
+              "primary_source",
+              "secondary_source",
+              "anecdotal"
+            ],
             "description": "How reliable is this data point?"
           },
           "surprise_factor": {
             "type": "string",
-            "enum": ["expected", "notable", "surprising", "counterintuitive"],
+            "enum": [
+              "expected",
+              "notable",
+              "surprising",
+              "counterintuitive"
+            ],
             "description": "How unexpected is this for the target audience?"
           },
           "usable_as": {
@@ -124,27 +215,41 @@
         "additionalProperties": false
       },
       "minItems": 3,
-      "description": "Verified facts and statistics — at least 3, aim for 5-8"
+      "description": "Verified facts and statistics \u2014 at least 3, aim for 5-8"
     },
     "audience_insights": {
       "type": "object",
-      "required": ["common_questions", "misconceptions", "knowledge_level"],
+      "required": [
+        "common_questions",
+        "misconceptions",
+        "knowledge_level"
+      ],
       "properties": {
         "common_questions": {
           "type": "array",
-          "items": { "type": "string" },
-          "minItems": 3,
-          "description": "Real questions people ask about this topic — sourced from forums, PAA, Quora"
+          "items": {
+            "type": "string"
+          },
+          "description": "Real questions people ask about this topic \u2014 sourced from forums, PAA, Quora"
         },
         "misconceptions": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["myth", "reality"],
+            "required": [
+              "myth",
+              "reality"
+            ],
             "properties": {
-              "myth": { "type": "string" },
-              "reality": { "type": "string" },
-              "source": { "type": "string" }
+              "myth": {
+                "type": "string"
+              },
+              "reality": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              }
             },
             "additionalProperties": false
           },
@@ -156,7 +261,9 @@
         },
         "pain_points": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Frustrations, confusions, or complaints related to this topic"
         }
       },
@@ -166,51 +273,126 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name", "position"],
+        "required": [
+          "name",
+          "position"
+        ],
         "properties": {
-          "name": { "type": "string" },
-          "title_or_affiliation": { "type": "string" },
-          "position": { "type": "string", "description": "Their stance or notable quote on this topic" },
-          "source_url": { "type": "string", "format": "uri" },
-          "contrarian": { "type": "boolean", "description": "Does this challenge the mainstream view?" }
+          "name": {
+            "type": "string"
+          },
+          "title_or_affiliation": {
+            "type": "string"
+          },
+          "position": {
+            "type": "string",
+            "description": "Their stance or notable quote on this topic"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "contrarian": {
+            "type": "boolean",
+            "description": "Does this challenge the mainstream view?"
+          }
         },
         "additionalProperties": false
       },
-      "description": "Named experts and their takes — useful for authority and debate framing"
+      "description": "Named experts and their takes \u2014 useful for authority and debate framing"
     },
     "angles_discovered": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name", "hook", "type", "why_now"],
+        "required": [
+          "name",
+          "hook",
+          "type",
+          "why_now"
+        ],
         "properties": {
-          "name": { "type": "string", "description": "Short angle title (5-8 words)" },
-          "hook": { "type": "string", "description": "One-sentence attention grabber" },
+          "name": {
+            "type": "string",
+            "description": "Short angle title (5-8 words)"
+          },
+          "hook": {
+            "type": "string",
+            "description": "One-sentence attention grabber"
+          },
           "type": {
             "type": "string",
-            "enum": ["trending", "evergreen", "contrarian", "narrative", "data_driven"],
+            "enum": [
+              "trending",
+              "evergreen",
+              "contrarian",
+              "narrative",
+              "data_driven"
+            ],
             "description": "What kind of angle is this?"
           },
-          "why_now": { "type": "string", "description": "Why this angle is compelling right now — cite research findings" },
+          "why_now": {
+            "type": "string",
+            "description": "Why this angle is compelling right now \u2014 cite research findings"
+          },
           "grounded_in": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Which data_points or audience_insights support this angle?"
           }
         },
         "additionalProperties": false
       },
-      "minItems": 3,
-      "description": "Angle candidates discovered through research — raw material for the Proposal Director"
+      "description": "Angle candidates discovered through research \u2014 raw material for the Proposal Director"
     },
     "visual_references": {
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "description": { "type": "string" },
-          "url": { "type": "string", "format": "uri" },
-          "what_works": { "type": "string", "description": "Why this visual approach is effective" }
+          "description": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "what_works": {
+            "type": "string",
+            "description": "Why this visual approach is effective"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "cinematic_reference",
+              "canonical_candidate",
+              "macro_detail",
+              "environment_reference",
+              "action_reference",
+              "style_reference"
+            ],
+            "description": "How this reference should be used by proposal/scene/assets stages."
+          },
+          "source_title": {
+            "type": "string"
+          },
+          "saved_path": {
+            "type": "string",
+            "description": "Optional project-relative path if a reference image was saved locally for internal prompting/review."
+          },
+          "appearance_facts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Concrete traits visible in the reference: anatomy, proportions, color, markings, habitat, scale cues."
+          },
+          "usage_notes": {
+            "type": "string",
+            "description": "How this should inform generation without copying copyrighted material into the final output."
+          }
         },
         "additionalProperties": false
       },
@@ -220,26 +402,122 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["url", "title", "used_for"],
+        "required": [
+          "url",
+          "title",
+          "used_for"
+        ],
         "properties": {
-          "url": { "type": "string", "format": "uri" },
-          "title": { "type": "string" },
-          "used_for": { "type": "string", "description": "Which section of the brief this source supports" },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "used_for": {
+            "type": "string",
+            "description": "Which section of the brief this source supports"
+          },
           "reliability": {
             "type": "string",
-            "enum": ["primary", "secondary", "anecdotal"]
+            "enum": [
+              "primary",
+              "secondary",
+              "anecdotal"
+            ]
           }
         },
         "additionalProperties": false
       },
-      "minItems": 5,
-      "description": "All sources used — at least 5. Full bibliography."
+      "description": "All sources used \u2014 at least 5. Full bibliography."
     },
     "research_summary": {
       "type": "string",
       "description": "One paragraph: the single most important insight from this research and why it matters for the video"
     },
-    "metadata": { "type": "object" }
+    "metadata": {
+      "type": "object"
+    }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "metadata"
+        ],
+        "properties": {
+          "metadata": {
+            "required": [
+              "research_scope"
+            ],
+            "properties": {
+              "research_scope": {
+                "const": "topic_only_from_approved_opportunity"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "metadata": {
+            "required": [
+              "approved_opportunity_id",
+              "approved_opportunity_version",
+              "channel_snapshot_sha256"
+            ],
+            "properties": {
+              "approved_opportunity_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "approved_opportunity_version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "channel_snapshot_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          },
+          "angles_discovered": {
+            "minItems": 1
+          },
+          "sources": {
+            "minItems": 3
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "landscape": {
+            "properties": {
+              "existing_content": {
+                "minItems": 3
+              },
+              "underserved_gaps": {
+                "minItems": 1
+              }
+            }
+          },
+          "audience_insights": {
+            "properties": {
+              "common_questions": {
+                "minItems": 3
+              }
+            }
+          },
+          "angles_discovered": {
+            "minItems": 3
+          },
+          "sources": {
+            "minItems": 5
+          }
+        }
+      }
+    }
+  ]
 }
