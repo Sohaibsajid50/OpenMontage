@@ -1,10 +1,12 @@
 name: avatar-spokesperson
-version: "2.0"
+version: "2.1"
 description: >
-  Presenter-led avatar pipeline for spokesperson videos, internal updates, onboarding,
-  sales intros, and short scripted explainers. Best for projects where a digital presenter
-  is the anchor and support graphics stay simple. EP orchestration adds quality gates for
-  lip-sync quality, presenter framing, and CTA landing.
+  Avatar pipeline for presenter-led videos and source-led commentary shorts:
+  spokesperson videos, internal updates, onboarding, sales intros, scripted
+  explainers, and viral source clips where an avatar or narrator comments over
+  existing footage. EP orchestration adds quality gates for source research,
+  beat-locked scripting, narration fit, lip-sync quality, presenter framing,
+  captions, and CTA landing.
 category: custom
 stability: production
 default_checkpoint_policy: guided
@@ -15,7 +17,7 @@ orchestration:
   budget_default_usd: 2.00
   max_revisions_per_stage: 3
   max_send_backs: 3
-  max_wall_time_minutes: 12
+  max_wall_time_minutes: 20
 
 extensions:
   custom_scripts: true
@@ -25,6 +27,9 @@ extensions:
 
 required_skills:
   - pipelines/avatar-spokesperson/executive-producer
+  - pipelines/avatar-spokesperson/source-research-director
+  - pipelines/avatar-spokesperson/source-screen-director
+  - pipelines/avatar-spokesperson/source-media-review-director
   - pipelines/avatar-spokesperson/idea-director
   - pipelines/avatar-spokesperson/script-director
   - pipelines/avatar-spokesperson/scene-director
@@ -32,6 +37,8 @@ required_skills:
   - pipelines/avatar-spokesperson/edit-director
   - pipelines/avatar-spokesperson/compose-director
   - pipelines/avatar-spokesperson/publish-director
+  - pipelines/avatar-spokesperson/persona-avatar-production
+  - creative/hook-engine
   - meta/reviewer
   - meta/checkpoint-protocol
 
@@ -42,9 +49,112 @@ compatible_playbooks:
   also_works: []
   custom_allowed: true
 
+modes:
+  presenter_led:
+    description: "Classic avatar-first spokesperson video."
+    source_research_required: false
+  source_commentary:
+    description: "Viral source video plus AI narration/avatar commentary."
+    source_research_required: true
+    default_layouts:
+      - source_top_avatar_bottom
+      - avatar_top_source_bottom
+      - source_full_avatar_overlay
+      - source_full_avatar_cutout
+      - voiceover_only
+    youtube_search_policy:
+      api: SocialKit REST
+      required_params:
+        type: shorts
+        sortBy: views
+      local_sort_by: views
+
 stages:
+  - name: source_research
+    skill: pipelines/avatar-spokesperson/source-research-director
+    condition: "source_commentary_mode"
+    produces:
+      - source_research
+      - decision_log
+    optional_tools:
+      - socialkit_source_search
+    tools_available:
+      - socialkit_source_search
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - YouTube discovery uses REST search with type=shorts and sortBy=views
+      - Candidates are locally sorted by numeric view count before selection
+      - Search query, limits, platform, and chosen candidates are recorded
+    success_criteria:
+      - At least 5 candidates are recorded when search quota allows
+      - YouTube candidates include views, duration, URL, title, and source_rank
+      - The selected candidate is approved or explicitly deferred
+
+  - name: source_screen
+    skill: pipelines/avatar-spokesperson/source-screen-director
+    condition: "source_commentary_mode"
+    required_artifacts_in:
+      - source_research
+    produces:
+      - source_screen
+    optional_tools:
+      - transcriber
+      - youtube_transcript
+      - youtube_comments
+      - youtube_summarize
+    tools_available:
+      - transcriber
+      - youtube_transcript
+      - youtube_comments
+      - youtube_summarize
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Transcript word count is used as an audio-suitability signal
+      - Final candidates collect 50-100 comments when quota allows
+      - Comment themes identify confusion, jokes, objections, and repeated moments
+    success_criteria:
+      - Selected candidate has a transcript classification
+      - Comment mining result is recorded, including count attempted and count returned
+      - Source audio treatment is proposed: mute, duck, keep moments, or reject
+
+  - name: source_media_review
+    skill: pipelines/avatar-spokesperson/source-media-review-director
+    condition: "source_commentary_mode"
+    required_artifacts_in:
+      - source_screen
+    produces:
+      - source_media_review
+      - beat_map
+    optional_tools:
+      - video_downloader
+      - frame_sampler
+      - scene_detect
+      - audio_probe
+    tools_available:
+      - video_downloader
+      - frame_sampler
+      - scene_detect
+      - audio_probe
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Source is understandable when muted
+      - Contact sheets and sampled frames cover the full timeline
+      - Beat map records visible objects/actions with first visible timestamps
+    success_criteria:
+      - Source media exists locally and passes ffprobe validation
+      - Frame/contact-sheet paths are recorded
+      - beat_map includes start, end, visual_trigger_time, and description for key moments
+
   - name: idea
     skill: pipelines/avatar-spokesperson/idea-director
+    optional_artifacts_in:
+      - source_research
+      - source_screen
+      - source_media_review
+      - beat_map
     produces:
       - brief
       - decision_log
@@ -53,18 +163,23 @@ stages:
     human_approval_default: true
     review_focus:
       - Avatar path and source reality are explicit
-      - CTA and audience fit the spokesperson format
+      - CTA and audience fit the spokesperson or source-commentary format
       - Missing capabilities are surfaced before scripting
     success_criteria:
       - Schema-valid brief artifact
-      - Brief records avatar path, narration source, and output shape
+      - Brief records avatar path, narration source, output shape, and mode
 
   - name: script
     skill: pipelines/avatar-spokesperson/script-director
     required_artifacts_in:
       - brief
+    optional_artifacts_in:
+      - source_screen
+      - source_media_review
+      - beat_map
     produces:
       - script
+      - timing_audit
     optional_tools:
       - transcriber
     tools_available:
@@ -73,11 +188,16 @@ stages:
     human_approval_default: true
     review_focus:
       - Spoken copy is concise and natural
+      - Hook lab includes evidence, varied scored options, and avoids generic repeated openers
       - Scene breaks are realistic for avatar delivery
       - On-screen text remains restrained
+      - Source-commentary lines are beat-locked to visible frame moments
     success_criteria:
       - Schema-valid script artifact
+      - Script metadata or artifact includes evidence_packet, hook_options, and selected_hook
+      - Hook lab includes at least 12 options and passes beat-lock, evidence, payoff, and muted-safety gates
       - Script sections map to scene-safe presenter beats
+      - Source-commentary mode has a timing audit with no early object/action references
 
   - name: scene_plan
     skill: pipelines/avatar-spokesperson/scene-director
@@ -85,6 +205,8 @@ stages:
       - script
     optional_artifacts_in:
       - brief
+      - source_media_review
+      - beat_map
     produces:
       - scene_plan
     tools_available: []
@@ -94,6 +216,7 @@ stages:
       - Speaker layout and background system are coherent
       - Support overlays remain secondary to the presenter
       - Aspect-ratio variants are planned realistically
+      - Source-commentary layout preserves source action and selected avatar placement
     success_criteria:
       - Schema-valid scene_plan artifact
       - Every scene has a defined speaker and support treatment
@@ -105,8 +228,12 @@ stages:
       - script
     optional_artifacts_in:
       - brief
+      - source_media_review
+      - beat_map
+      - timing_audit
     produces:
       - asset_manifest
+      - narration_fit_report
     optional_tools:
       - heygen_avatar
       - talking_head
@@ -128,12 +255,14 @@ stages:
     checkpoint_required: true
     human_approval_default: true
     review_focus:
-      - Avatar generation path is explicit and honest (including no-avatar pivot if applicable)
+      - Avatar generation path is explicit and honest including no-avatar pivot if applicable
       - Narration, subtitle, and background assets are aligned
       - Blocked paths are recorded instead of hidden
+      - Source-commentary narration duration is measured and fit to the source duration
     success_criteria:
       - Schema-valid asset_manifest artifact
       - All referenced asset files exist on disk
+      - Source-commentary mode records narration duration, target duration, speed_factor, and fit decision
 
   - name: edit
     skill: pipelines/avatar-spokesperson/edit-director
@@ -142,6 +271,9 @@ stages:
       - asset_manifest
     optional_artifacts_in:
       - script
+      - source_media_review
+      - beat_map
+      - narration_fit_report
     produces:
       - edit_decisions
     tools_available: []
@@ -151,6 +283,7 @@ stages:
       - Presenter remains visually primary
       - Graphics and captions reinforce rather than crowd
       - CTA timing lands clearly
+      - Source-commentary layout, source audio treatment, and caption placement preserve key action
     success_criteria:
       - Schema-valid edit_decisions artifact
       - Edit decisions cover the planned deliverables
@@ -162,6 +295,8 @@ stages:
       - asset_manifest
     optional_artifacts_in:
       - scene_plan
+      - beat_map
+      - narration_fit_report
     produces:
       - render_report
       - final_review
@@ -182,6 +317,7 @@ stages:
       - Lip sync or mouth timing is acceptable for the chosen path
       - Subtitle placement and framing remain clean
       - Audio is clear and presenter-focused
+      - Source-commentary renders are spot-checked against beat-map timing and caption placement
     success_criteria:
       - Schema-valid render_report artifact
       - Output file exists and passes ffprobe validation
@@ -194,6 +330,10 @@ stages:
     optional_artifacts_in:
       - brief
       - script
+      - source_research
+      - source_screen
+      - timing_audit
+      - narration_fit_report
     produces:
       - publish_log
     tools_available: []
@@ -203,6 +343,7 @@ stages:
       - Hero export and derivatives are clearly labeled
       - Metadata matches the spokesperson offer and audience
       - Thumbnail or poster frame features the presenter cleanly
+      - Source-commentary packages preserve source notes, timing audit, and caption files
     success_criteria:
       - Schema-valid publish_log artifact
       - Export package contains video and metadata outputs

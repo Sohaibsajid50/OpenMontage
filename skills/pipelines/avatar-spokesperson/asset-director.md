@@ -4,6 +4,10 @@
 
 This stage prepares the actual spokesperson ingredients: narration, avatar or lip-sync footage, subtitle assets, branded backgrounds, and the minimal support graphics needed to complete the cut.
 
+In `source_commentary` mode, this stage also measures narration against the
+source video duration, fits the audio, generates subtitle/caption assets, and
+only then creates the avatar performance from the final fitted narration.
+
 ## Prerequisites
 
 | Layer | Resource | Purpose |
@@ -25,6 +29,14 @@ Use one primary path and record it clearly:
 
 Do not hide a blocked avatar path. Record it.
 
+**Recurring persona (e.g. Mason Vale):** follow
+`skills/pipelines/avatar-spokesperson/persona-avatar-production.md`. Default path:
+per-line ElevenLabs TTS in the persona's saved voice → timeline placement →
+`talking_head` with `model: kling_avatar_v2_pro` (hosted on fal; needs only
+`FAL_KEY`) using the persona's look image for the chosen layout. Both
+`talking_head` and `lip_sync` now have hosted fal backends, so "no GPU" no
+longer forces the no-avatar pivot. Always set `queue_record_path` on paid calls.
+
 ### 1b. Sample Preview (Prevents Wasted Spend)
 
 Before batch-generating assets, produce one sample of each expensive type and show the user:
@@ -44,11 +56,53 @@ Spokesperson videos depend on speech. Determine whether narration is:
 
 If narration is missing and no TTS tool is available, mark the project blocked instead of pretending the stage succeeded.
 
+### 2b. Fit Narration To Source Timing
+
+For source-commentary work, generate the strongest approved narration first,
+then measure its actual duration before rendering the avatar.
+
+Compute:
+
+```text
+speed_factor = narration_duration / target_video_duration
+```
+
+Use this policy:
+
+| Speed Factor | Action |
+| --- | --- |
+| 0.95-1.10 | Fit directly with small trim, silence, or speed change |
+| 1.10-1.25 | Usually acceptable for high-energy shorts if speech remains clear |
+| 1.25-1.35 | Review manually; often rewrite or split into segments |
+| >1.35 | Rewrite before forcing audio |
+| <0.90 | Add copy, pauses, or original sound moments |
+
+For larger-scale narration, a controlled speed-up is acceptable when it improves
+energy and still matches the beat map. But global speed-up cannot fix a line
+attached to the wrong frame. If a visual object appears at 36 seconds, the line
+that names it must still land at or after that visual trigger after fitting.
+
+Preferred order:
+
+1. final beat-locked script,
+2. TTS narration,
+3. duration measurement,
+4. speed/segment fit,
+5. subtitle/caption timing,
+6. avatar render from the final narration audio.
+
+Prefer **per-line TTS** over one long take: generate each script line
+separately, trim silence, and place each at `max(planned_start,
+previous_end + 0.25s)`. Record `artifacts/voice_lines.json`. When lines run
+long, **retime the source segments** (free) instead of speeding up the voice
+or regenerating the avatar (paid).
+
 ### 3. Build The Minimal Support Kit
 
 Prepare only what the scene plan actually needs:
 
 - subtitle files,
+- burned-in caption image or subtitle assets for platforms that need hard captions,
 - one lower-third system,
 - CTA card,
 - background or plate assets,
@@ -60,7 +114,10 @@ Recommended metadata keys:
 
 - `avatar_generation_path`
 - `narration_assets`
+- `narration_fit_report`
 - `subtitle_assets`
+- `caption_style`
+- `caption_safe_zone_notes`
 - `background_assets`
 - `scene_asset_index`
 - `blocked_assets`
@@ -71,6 +128,8 @@ Recommended metadata keys:
 - narration and avatar assets align,
 - support graphics stay minimal,
 - every referenced file exists.
+- source-commentary mode records target duration, narration duration,
+  speed_factor, fit method, and subtitle/caption source.
 
 ## No-Avatar Path
 

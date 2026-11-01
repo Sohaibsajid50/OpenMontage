@@ -4,6 +4,9 @@
 
 Plan the visual system for the presenter-led cut. This stage decides how the speaker sits in frame, what support layers appear, and which aspect ratios are actually worth building.
 
+In `source_commentary` mode, this stage decides how source footage and avatar
+footage share the frame while preserving the action viewers came to watch.
+
 ## Reference Inputs
 
 - `docs/avatar-spokesperson-best-practices.md`
@@ -19,6 +22,9 @@ Choose a primary layout:
 - presenter plus side panel,
 - presenter plus lower-third system,
 - presenter over branded background.
+- source video top plus avatar bottom,
+- avatar top plus source video bottom,
+- full source video with small avatar overlay.
 
 Keep the hero layout simple and reusable.
 
@@ -54,6 +60,24 @@ Default to one hero cut first. Only plan vertical or square variants if the pres
 - support layers solve specific communication needs,
 - the background system is consistent,
 - variant ambition stays realistic.
+
+## Source-Commentary Layout Rules
+
+For challenge/game footage, the source action is usually the primary visual even
+when an avatar is present. Plan one of:
+
+- `source_top_avatar_bottom`: useful when the avatar should be constantly
+  visible without covering the game.
+- `avatar_top_source_bottom`: useful when the avatar should carry more facial
+  performance than the source action.
+- `source_full_avatar_overlay`: useful when the source needs full-screen space
+  and the avatar can sit in a corner.
+- `voiceover_only`: useful when bottles, hands, labels, score, or prize areas
+  would be blocked by an avatar.
+
+Record caption safe zones per beat. Caption placement can move between upper
+and lower thirds if the game board changes position, but it must not hide the
+decisive object/action named by the narration.
 
 ## Narration-Over-Graphics Fallback
 

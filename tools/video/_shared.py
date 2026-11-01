@@ -793,3 +793,51 @@ def probe_output(path: Path) -> dict[str, Any]:
     except Exception:
         pass
     return info
+
+
+FAL_UPLOAD_CONTENT_TYPES = {
+    "png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "webp": "image/webp",
+    "mp4": "video/mp4", "mov": "video/quicktime", "webm": "video/webm",
+    "wav": "audio/wav", "mp3": "audio/mpeg", "m4a": "audio/mp4", "aac": "audio/aac", "ogg": "audio/ogg",
+}
+FAL_UPLOAD_TIMEOUT_SECONDS = 300
+
+
+def upload_file_fal(file_path: str) -> str:
+    """Upload a local image, video, or audio file to fal.ai storage and return its public URL."""
+    import requests
+
+    api_key = os.environ.get("FAL_KEY") or os.environ.get("FAL_AI_API_KEY")
+    if not api_key:
+        raise RuntimeError("FAL_KEY or FAL_AI_API_KEY required for file upload")
+
+    path = Path(file_path)
+    if not path.exists():
+        raise FileNotFoundError(f"File not found: {file_path}")
+
+    content_type = FAL_UPLOAD_CONTENT_TYPES.get(path.suffix.lower().lstrip("."))
+    if content_type is None:
+        raise ValueError(f"Unsupported file type for fal upload: {path.suffix}")
+
+    init_resp = requests.post(
+        "https://rest.alpha.fal.ai/storage/upload/initiate",
+        headers={"Authorization": f"Key {api_key}", "Content-Type": "application/json"},
+        json={"content_type": content_type, "file_name": path.name},
+        timeout=30,
+    )
+    init_resp.raise_for_status()
+    data = init_resp.json()
+
+    put_resp = requests.put(
+        data["upload_url"],
+        headers={"Content-Type": content_type},
+        data=path.read_bytes(),
+        timeout=FAL_UPLOAD_TIMEOUT_SECONDS,
+    )
+    put_resp.raise_for_status()
+
+    return data["file_url"]
+
+
+# seedance_video imports this name for its image-to-video upload.
+upload_image_to_fal = upload_file_fal

@@ -4,6 +4,10 @@
 
 Package the finished spokesperson outputs for delivery. This stage should make it obvious which file is the hero cut, which are derivatives, and what message or audience each version serves.
 
+For source-commentary shorts, package the final render with the source research,
+comment themes, beat map, timing audit, narration fit report, and caption file so
+future videos can repeat the same workflow.
+
 ## Process
 
 ### 1. Label Deliverables Clearly
@@ -25,6 +29,9 @@ Recommended metadata keys:
 - `offer_name`
 - `locale`
 - `thumbnail_concept`
+- `source_url`
+- `avatar_layout_mode`
+- `narration_fit_report`
 
 ### 3. Package Review Notes
 
@@ -36,6 +43,8 @@ If the avatar path has limitations such as visible lip-sync risk, retain that no
 - metadata matches the intended message,
 - poster frame or thumbnail concept features the presenter cleanly,
 - review notes stay attached to the package.
+- source-commentary packages include source notes, timing audit, captions, and
+  final render paths.
 
 ## Common Pitfalls
 

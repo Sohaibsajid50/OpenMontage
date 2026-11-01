@@ -1,7 +1,8 @@
 """Photo-to-talking-head video generation tool.
 
 Animates a still face photo to appear as if speaking provided audio.
-Uses SadTalker or MuseTalk models for audio-driven face animation.
+Hosted: Kling AI Avatar v2 Pro or sync-3 image-to-video on fal.ai (needs FAL_KEY).
+Local: SadTalker or MuseTalk (needs a GPU install).
 """
 
 from __future__ import annotations
@@ -24,6 +25,8 @@ from tools.base_tool import (
     ToolStatus,
     ToolTier,
 )
+from tools.avatar._fal_avatar import FAL_AVATAR_ENDPOINTS, FAL_AVATAR_USD_PER_SECOND, run_fal_avatar
+from tools.avatar._fal_queue import get_fal_api_key
 
 
 class TalkingHead(BaseTool):
@@ -35,13 +38,13 @@ class TalkingHead(BaseTool):
     stability = ToolStability.EXPERIMENTAL
     execution_mode = ExecutionMode.SYNC
     determinism = Determinism.STOCHASTIC
-    runtime = ToolRuntime.LOCAL_GPU
+    runtime = ToolRuntime.HYBRID
 
     dependencies = []  # checked dynamically via get_status()
     install_instructions = (
-        "Clone https://github.com/OpenTalker/SadTalker and set SADTALKER_PATH env var\n"
-        "Requires: PyTorch with CUDA, ffmpeg\n"
-        "pip install sadtalker  # or clone the repo"
+        "Hosted: set FAL_KEY to use Kling AI Avatar v2 Pro (model kling_avatar_v2_pro).\n"
+        "Local: clone https://github.com/OpenTalker/SadTalker and set SADTALKER_PATH "
+        "(PyTorch + GPU required)."
     )
 
     agent_skills = ["ffmpeg"]
@@ -71,9 +74,21 @@ class TalkingHead(BaseTool):
             },
             "model": {
                 "type": "string",
-                "enum": ["sadtalker", "musetalk"],
+                "enum": ["sadtalker", "musetalk", "kling_avatar_v2_pro", "sync_3_image"],
                 "default": "sadtalker",
-                "description": "Model to use for face animation",
+                "description": "Model to use for face animation (kling_avatar_v2_pro and sync_3_image are hosted on fal)",
+            },
+            "prompt": {
+                "type": "string",
+                "description": "Hosted models: optional motion/performance direction",
+            },
+            "duration_seconds": {
+                "type": "number",
+                "description": "Audio length, used only for hosted cost estimation",
+            },
+            "queue_record_path": {
+                "type": "string",
+                "description": "Hosted models: file recording the queue job; an existing record blocks resubmission",
             },
             "expression_scale": {
                 "type": "number",
@@ -109,7 +124,10 @@ class TalkingHead(BaseTool):
     # ------------------------------------------------------------------
 
     def get_status(self) -> ToolStatus:
-        """Check for SadTalker availability via env var or Python import."""
+        """Available with hosted fal access or a local SadTalker install."""
+        if get_fal_api_key():
+            return ToolStatus.AVAILABLE
+
         # 1. SADTALKER_PATH env var pointing to cloned repo
         sadtalker_path = os.environ.get("SADTALKER_PATH", "")
         if sadtalker_path and Path(sadtalker_path).is_dir():
@@ -129,7 +147,9 @@ class TalkingHead(BaseTool):
     # ------------------------------------------------------------------
 
     def estimate_cost(self, inputs: dict[str, Any]) -> float:
-        return 0.0  # local GPU, no API cost
+        """Hosted models bill per output second; local models are free."""
+        rate = FAL_AVATAR_USD_PER_SECOND.get(inputs.get("model", "sadtalker"), 0.0)
+        return round(rate * float(inputs.get("duration_seconds", 0)), 2)
 
     def estimate_runtime(self, inputs: dict[str, Any]) -> float:
         # SadTalker typically takes 30-120s depending on audio length
@@ -157,14 +177,22 @@ class TalkingHead(BaseTool):
         start = time.time()
 
         try:
-            if model == "sadtalker":
+            if model in FAL_AVATAR_ENDPOINTS:
+                request_info = run_fal_avatar(model, image_path, audio_path, output_path, inputs)
+                result = ToolResult(
+                    success=True,
+                    data={"output": str(output_path), "backend": "fal", **request_info},
+                    artifacts=[str(output_path)],
+                    model=FAL_AVATAR_ENDPOINTS[model],
+                )
+            elif model == "sadtalker":
                 result = self._run_sadtalker(inputs, image_path, audio_path, output_path)
             elif model == "musetalk":
                 result = self._run_musetalk(inputs, image_path, audio_path, output_path)
             else:
                 return ToolResult(
                     success=False,
-                    error=f"Unknown model: {model}. Supported: sadtalker, musetalk",
+                    error=f"Unknown model: {model}. Supported: sadtalker, musetalk, kling_avatar_v2_pro, sync_3_image",
                 )
         except Exception as e:
             return ToolResult(success=False, error=f"Talking head generation failed: {e}")
